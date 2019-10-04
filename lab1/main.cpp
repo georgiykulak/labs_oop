@@ -1,6 +1,6 @@
 #include <iostream>
 
-template <class T>
+template <class T = long double>
 struct RingList {
         private:
         struct Bead {
@@ -12,16 +12,20 @@ struct RingList {
         public:
         RingList(size_t size = 0);
         ~RingList();
-        RingList(RingList const & obj);
+        //RingList(RingList const & obj);
         T& getCurrent() const;
         T popCurrent();
-        T& setCurrent(std::istream obj = std::cin);
+        T& setCurrent(std::istream& obj = std::cin);
         T& changeCurrent(T new_data);
-        void insertAfterCurrent();
-        void insertBeforeCurrent();
+        void insertAfterCurrent(T new_data);
+        void insertBeforeCurrent(T new_data);
+        void appendCurrent(T new_data);
         void moveLeft();
         void moveRight();
- 
+
+        private:
+        void _deleteCurrent();
+        void _makeCurrent(T new_data);
 };
 
 int main()
@@ -33,6 +37,7 @@ int main()
         }
         std::cout << "\n";
         obj.popCurrent();
+        obj.setCurrent();
         for ( auto i = 3; i; --i ) {
                 std::cout << obj.getCurrent() << "\n";
                 obj.moveRight();
@@ -67,15 +72,8 @@ RingList<T>::RingList(size_t size) :
 template <class T>
 RingList<T>::~RingList()
 {
-        Bead* temp;               //
-        
         while ( curr->next != curr) {
-                temp = curr;
-                curr = curr->next;
-                temp = temp->prev;
-                delete temp->next;
-                temp->next = curr;
-                curr->prev = temp;//
+                _deleteCurrent();
         }
         delete curr;
 }
@@ -90,15 +88,41 @@ template <class T>
 inline T RingList<T>::popCurrent()
 {
         T tempdata = curr->data;
-        Bead* temp = curr;//
+        
+        _deleteCurrent();
 
-        curr = curr->next;
-        temp = temp->prev;
-        delete temp->next;
-        temp->next = curr;
-        curr->prev = temp;//
+        return  tempdata;
+}
 
-        return tempdata;
+template <class T>
+inline T& RingList<T>::setCurrent(std::istream& obj)
+{
+        obj >> curr->data;
+        return curr->data;
+}
+
+template <class T>
+inline T& RingList<T>::changeCurrent(T new_data) {
+        curr->data = new_data;
+        return     curr->data;
+}
+
+template <class T>
+inline void RingList<T>::insertAfterCurrent(T new_data)
+{
+        appendCurrent(new_data);
+}
+template <class T>
+inline void RingList<T>::insertBeforeCurrent(T new_data)
+{
+        moveLeft();
+        appendCurrent(new_data);
+}
+
+template <class T>
+inline void RingList<T>::appendCurrent(T new_data)
+{
+        _makeCurrent(new_data);
 }
 
 template <class T>
@@ -111,4 +135,40 @@ template <class T>
 inline void RingList<T>::moveRight()
 {
         curr = curr->next;
+}
+
+template <class T>
+inline void RingList<T>::_deleteCurrent()
+{
+        Bead* temp = curr;
+
+        curr = curr->next;
+        temp = temp->prev;
+        delete temp->next;
+        temp->next = curr;
+        curr->prev = temp;
+}
+
+template <class T>
+inline void RingList<T>::_makeCurrent(T new_data)
+{
+        if ( curr ) {
+                Bead* temp; 
+                Bead*  end;
+
+                temp =   new Bead;
+                end  = curr->next;
+                temp->prev = curr;
+                temp->next =  end;
+                curr->next = temp;
+                end->prev  = temp;
+                curr = curr->next; 
+        }
+        else {
+                curr =   new Bead;
+                curr->prev = curr;
+                curr->next = curr;
+        }
+
+        curr->data = new_data;
 }
