@@ -13,6 +13,7 @@ struct RingList {
         RingList(size_t size = 0);
         ~RingList();
         //RingList(RingList const & obj);
+        //RingList& operator=(RingList const & obj);
         T& getCurrent() const;
         T popCurrent();
         T& setCurrent(std::istream& obj = std::cin);
@@ -22,6 +23,8 @@ struct RingList {
         void appendCurrent(T new_data);
         void moveLeft();
         void moveRight();
+        //Bead* _getPointer();
+        //void _setPointer(Bead* elem);
 
         private:
         void _deleteCurrent();
