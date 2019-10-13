@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 template <class T = long double>
 struct RingList {
@@ -12,7 +13,9 @@ struct RingList {
         public:
         RingList(size_t size = 0);
         ~RingList();
-        //RingList(RingList const & obj);
+        RingList(RingList<T> & obj);
+        RingList(std::vector<T> const& vec);//////////////////////
+        RingList(T* const arr);///////////////////////////////////
         //RingList& operator=(RingList const & obj);
         T& getCurrent() const;
         T popCurrent();
@@ -23,8 +26,10 @@ struct RingList {
         void appendCurrent(T new_data);
         void moveLeft();
         void moveRight();
-        //Bead* _getPointer();
-        //void _setPointer(Bead* elem);
+        bool empty();
+        size_t count();
+        bool compare(RingList<T> & obj);
+        bool compare_all(RingList<T> & obj);
 
         private:
         void _deleteCurrent();
@@ -33,18 +38,50 @@ struct RingList {
 
 int main()
 {
-        RingList<int> obj(3);
-        for ( auto i = 3; i; --i ) {
+        /*
+        size_t numb;
+        std::cout << "First Test\n"; 
+        std::cout << "Enter number of beads for constructor:\n";
+        std::cin >> numb;
+        RingList<int> obj(numb);
+        std::cout << "Move right\n";
+        for ( auto i = numb; i; --i ) {
                 std::cout << obj.getCurrent() << "\n";
+                obj.moveRight();
+        }
+        std::cout << "Move left\n";
+        for ( auto i = numb; i; --i ) {
+                std::cout << obj.getCurrent() << "\n";
+                obj.moveLeft();
+        }
+        std::cout << "Pop\n";
+        obj.popCurrent();
+        //obj.setCurrent();
+        for ( auto i = numb - 1; i; --i ) {
+                std::cout << obj.getCurrent() << "\n";
+                obj.moveRight();
+        }
+        std::cout << "Set\n";
+        obj.setCurrent();
+        for ( auto i = numb; i; --i ) {
+                std::cout << obj.getCurrent() << "\n";
+                obj.moveRight();
+        }
+        std::cout << "Triple loop\n";
+        for ( auto i = numb * 3; i; --i ) {
+                std::cout << obj.getCurrent() << " ";
                 obj.moveRight();
         }
         std::cout << "\n";
-        obj.popCurrent();
-        obj.setCurrent();
-        for ( auto i = 3; i; --i ) {
-                std::cout << obj.getCurrent() << "\n";
-                obj.moveRight();
-        }
+        */
+        //RingList<int> obj1(3);
+        //RingList<int> obj2(obj1);
+        
+        RingList<int> obj1;
+        //obj1.moveRight();
+        RingList<int> obj2;
+        if ( obj1.compare(obj2) ) std::cout << "true" << "\n";
+        std::cout << obj1.count() << " " << obj2.count() << "\n";
         return 0;
 }
 
@@ -75,16 +112,37 @@ RingList<T>::RingList(size_t size) :
 template <class T>
 RingList<T>::~RingList()
 {
-        while ( curr->next != curr) {
-                _deleteCurrent();
+        if ( curr ) {
+                while ( curr->next != curr) {
+                        _deleteCurrent();
+                }
+                delete curr; 
         }
-        delete curr;
+}
+
+template <class T>
+RingList<T>::RingList(RingList & obj)
+{
+        //////////////////////////////////////////////////////////////////////////////////////////
+}
+/*
+template <class T>
+RingList<T>::RingList(std::vector<T> const& vec)
+{
+        //////////////////////////////////////////////////////////////////////////////////////////
+}
+*/
+        
+template <class T>
+RingList<T>::RingList(T* const arr)
+{
+        //////////////////////////////////////////////////////////////////////////////////////////
 }
 
 template <class T>
 inline T& RingList<T>::getCurrent() const
 {
-        return curr->data;
+        return curr->data; //добавить позднее ошибку для случая когда curr == nullptr
 }
 
 template <class T>
@@ -94,13 +152,15 @@ inline T RingList<T>::popCurrent()
         
         _deleteCurrent();
 
-        return  tempdata;
+        return tempdata; //добавить позднее ошибку для случая когда curr == nullptr
 }
 
 template <class T>
 inline T& RingList<T>::setCurrent(std::istream& obj)
 {
-        obj >> curr->data;
+        T tempdata;
+        obj >> tempdata;
+        _makeCurrent(tempdata);
         return curr->data;
 }
 
@@ -115,6 +175,7 @@ inline void RingList<T>::insertAfterCurrent(T new_data)
 {
         appendCurrent(new_data);
 }
+
 template <class T>
 inline void RingList<T>::insertBeforeCurrent(T new_data)
 {
@@ -138,6 +199,103 @@ template <class T>
 inline void RingList<T>::moveRight()
 {
         curr = curr->next;
+}
+
+template <class T>
+inline bool RingList<T>::empty()
+{
+        return curr == nullptr;
+}
+
+template <class T>
+inline size_t RingList<T>::count()
+{
+        if ( empty() )
+                return 0;
+        
+        Bead* temp = curr->prev;
+        size_t counter = 0;
+
+        while ( temp != curr ) {
+                ++counter;
+                moveRight();
+        }
+
+        moveRight();
+
+        return counter + 1;
+}
+
+template <class T>
+inline bool RingList<T>::compare(RingList<T> & obj)
+{
+        if ( empty() && obj.empty() )
+                return true;
+        
+        if ( !empty() &&  obj.empty() ||
+              empty() && !obj.empty()    )
+                return false;
+        
+        bool flag = true;
+        Bead* temp = curr->prev;
+        size_t counter = 0;
+
+        while ( temp != curr ) {
+                if ( curr->data != obj.getCurrent() ) {
+                        for ( auto i = counter; i; --i ) {
+                                moveLeft();
+                                obj.moveLeft();
+                        }
+                        
+                        return false;
+                }
+
+                ++counter;
+                moveRight();
+                obj.moveRight();
+        }
+        
+        moveRight();
+        obj.moveRight();
+        
+        return flag;
+}
+
+template <class T>
+inline bool RingList<T>::compare_all(RingList<T> & obj)
+{
+        if ( empty() && obj.empty() )
+                return true;
+        
+        if ( !empty() &&  obj.empty() ||
+              empty() && !obj.empty()    )
+                return false;
+        
+        Bead* temp = curr->prev;
+        size_t counter = 0;
+
+        while ( temp != curr ) {
+                if ( compare(obj) ) {
+                        for ( auto i = counter; i; --i ) {
+                                moveLeft();
+                        }
+                        
+                        return true;
+                }
+
+                ++counter;
+                moveRight();
+        }
+        
+        if ( compare(obj) ) {
+                moveRight();
+                
+                return true;
+        }
+
+        moveRight();
+
+        return false;
 }
 
 template <class T>
