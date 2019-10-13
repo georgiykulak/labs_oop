@@ -1,3 +1,5 @@
+//Добавить вывод ошибок при неправильной работе с классом
+
 #include <iostream>
 #include <vector>
 
@@ -14,11 +16,12 @@ struct RingList {
         RingList(size_t size = 0);
         ~RingList();
         RingList(RingList<T> & obj);
-        RingList(std::vector<T> const& vec);//////////////////////
-        RingList(T* const arr);///////////////////////////////////
+        RingList(std::vector<T> const& vec);
+        RingList(T* const arr, size_t size);
         //RingList& operator=(RingList const & obj);
         T& getCurrent() const;
         T popCurrent();
+        void getList();
         T& setCurrent(std::istream& obj = std::cin);
         T& changeCurrent(T new_data);
         void insertAfterCurrent(T new_data);
@@ -76,12 +79,21 @@ int main()
         */
         //RingList<int> obj1(3);
         //RingList<int> obj2(obj1);
-        
-        RingList<int> obj1;
-        //obj1.moveRight();
-        RingList<int> obj2;
+        std::vector<int> vec{1, 3, 5};
+        int arr[3] {1, 3, 5};
+        RingList<int> obj1(vec);
+        //RingList<int> obj1(3);
+        std::cout << "ok\n";
+        RingList<int> obj2(arr, 3);
+        //RingList<int> obj2(obj1);
+        std::cout << "ok\n";
         if ( obj1.compare(obj2) ) std::cout << "true" << "\n";
+        std::cout << "ok\n";
+        std::cout << obj1.getCurrent() << " " << obj2.getCurrent() << "\n";
         std::cout << obj1.count() << " " << obj2.count() << "\n";
+        obj1.changeCurrent(10);
+        obj1.getList();
+        obj2.getList();
         return 0;
 }
 
@@ -121,22 +133,43 @@ RingList<T>::~RingList()
 }
 
 template <class T>
-RingList<T>::RingList(RingList & obj)
+RingList<T>::RingList(RingList<T> & obj) :
+        curr{nullptr}
 {
-        //////////////////////////////////////////////////////////////////////////////////////////
-}
-/*
-template <class T>
-RingList<T>::RingList(std::vector<T> const& vec)
-{
-        //////////////////////////////////////////////////////////////////////////////////////////
-}
-*/
+        if ( !obj.empty() ) {
+                obj.moveRight();
         
+                for ( auto i = obj.count(); i; --i ) {
+                        _makeCurrent(obj.getCurrent());
+                        obj.moveRight();
+                }
+        
+                obj.moveLeft();
+        }
+}
+
 template <class T>
-RingList<T>::RingList(T* const arr)
+RingList<T>::RingList(std::vector<T> const& vec) :
+        curr{nullptr}
 {
-        //////////////////////////////////////////////////////////////////////////////////////////
+        if ( vec.empty() )
+                std::cout << "empty vector\n"; //или по-другому вывести ошибку
+
+        for ( auto const& elem: vec ) {
+                _makeCurrent(elem);
+        }
+}
+
+template <class T>
+RingList<T>::RingList(T* const arr, size_t size) :
+        curr{nullptr}
+{
+        if ( arr == nullptr )
+                std::cout << "empty array\n"; //или по-другому вывести ошибку
+
+        for ( size_t i = 0; i < size; ++i ) {
+                _makeCurrent(*(arr + i));
+        }
 }
 
 template <class T>
@@ -153,6 +186,15 @@ inline T RingList<T>::popCurrent()
         _deleteCurrent();
 
         return tempdata; //добавить позднее ошибку для случая когда curr == nullptr
+}
+
+template <class T>
+inline void RingList<T>::getList()
+{
+        for ( auto i = count(); i; --i ) {
+                std::cout << getCurrent() << " ";
+                moveRight();
+        }
 }
 
 template <class T>
