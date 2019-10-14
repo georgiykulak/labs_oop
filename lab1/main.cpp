@@ -104,42 +104,42 @@ std::ostream& operator<<
 
 template <class F>
 bool operator<
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return  obj1.getCurrent() < obj2.getCurrent();
 }
 
 template <class F>
 bool operator>
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return  obj1.getCurrent() > obj2.getCurrent();
 }
 
 template <class F>
 bool operator<=
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return obj1.getCurrent() <= obj2.getCurrent();
 }
 
 template <class F>
 bool operator>=
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return obj1.getCurrent() >= obj2.getCurrent();
 }
 
 template <class F>
 bool operator==
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return obj1.getCurrent() == obj2.getCurrent();
 }
 
 template <class F>
 bool operator!=
-(RingList<F> const& obj1, RingList<F> const& obj2) const
+(RingList<F> const& obj1, RingList<F> const& obj2)
 {
         return obj1.getCurrent() != obj2.getCurrent();
 }
