@@ -39,10 +39,9 @@ struct RingList {
         void _makeCurrent(T new_data);
 
         public:
-        T& operator> (size_t numb) { return getCurrent(); } //продолжить заниматься перегрузкой
-        T operator>> (size_t numb) { return popCurrent(); } //
-        T operator<< (T new_data) ////////////////////////////
-        { _makeCurrent(new_data); return new_data; }
+        T operator>  (T& obj);
+        T operator>> (T& obj);
+        T operator<< (T& obj);
         
         template <class F>
         friend const F& operator++ (RingList<F> & obj);
@@ -60,6 +59,26 @@ struct RingList {
         
         operator T*();
 };
+
+template <class T>
+T RingList<T>::operator>  (T& obj)
+{
+        return obj = getCurrent();
+}
+
+template <class T>
+T RingList<T>::operator>> (T& obj)
+{
+        return obj = popCurrent();
+}
+
+
+template <class T>
+T RingList<T>::operator<< (T& obj)
+{
+        appendCurrent(obj);
+        return obj;
+}
 
 template <class F>
 const F& operator++ (RingList<F> & obj)
