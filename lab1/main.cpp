@@ -16,9 +16,9 @@ struct RingList {
         RingList(size_t size = 0);
         ~RingList();
         RingList(RingList<T> & obj);
+        //RingList& operator=(RingList const & obj);
         RingList(std::vector<T> const& vec);
         RingList(T* const arr, size_t size);
-        //RingList& operator=(RingList const & obj);
         T& getCurrent() const;
         T popCurrent();
         void getList();
@@ -37,7 +37,114 @@ struct RingList {
         private:
         void _deleteCurrent();
         void _makeCurrent(T new_data);
+
+        public:
+        T& operator> (size_t numb) { return getCurrent(); } //продолжить заниматься перегрузкой
+        T operator>> (size_t numb) { return popCurrent(); } //
+        T operator<< (T new_data) ////////////////////////////
+        { _makeCurrent(new_data); return new_data; }
+        
+        template <class F>
+        friend const F& operator++ (RingList<F> & obj);
+        
+        template <class F>
+        friend const F& operator-- (RingList<F> & obj);
+        
+        template <class F>
+        friend F operator++ (RingList<F> & obj, int);
+        
+        template <class F>
+        friend F operator-- (RingList<F> & obj, int);
+        
 };
+
+template <class F>
+const F& operator++ (RingList<F> & obj)
+{
+        obj.moveLeft();
+        return obj.getCurrent();
+}
+
+template <class F>
+const F& operator-- (RingList<F> & obj)
+{
+        obj.moveRight();
+        return obj.getCurrent();
+}
+
+template <class F>
+F operator++ (RingList<F> & obj, int)
+{
+        obj.moveLeft();
+        return obj.getCurrent();
+}
+
+template <class F>
+F operator-- (RingList<F> & obj, int)
+{
+        obj.moveRight();
+        return obj.getCurrent();
+}
+
+template <class F>
+std::istream& operator>>
+        (std::istream&  in, RingList<F> & obj)
+{
+        obj.setCurrent(in);
+        return  in;
+}
+
+template <class F>
+std::ostream& operator<<
+        (std::ostream& out, RingList<F> const& obj)
+{
+        out << obj.getCurrent();
+        return out;
+}
+
+template <class F>
+bool operator<
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return  obj1.getCurrent() < obj2.getCurrent();
+}
+
+template <class F>
+bool operator>
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return  obj1.getCurrent() > obj2.getCurrent();
+}
+
+template <class F>
+bool operator<=
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return obj1.getCurrent() <= obj2.getCurrent();
+}
+
+template <class F>
+bool operator>=
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return obj1.getCurrent() >= obj2.getCurrent();
+}
+
+template <class F>
+bool operator==
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return obj1.getCurrent() == obj2.getCurrent();
+}
+
+template <class F>
+bool operator!=
+(RingList<F> const& obj1, RingList<F> const& obj2) const
+{
+        return obj1.getCurrent() != obj2.getCurrent();
+}
+
+
 
 inline void print(std::string s)
 {
@@ -51,6 +158,7 @@ std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
 
 int main()
 {
+        /*
         tilda();
         print("~~~~~~THE TESTBENCH IS STARTING...~~~~~~");
         tilda();
@@ -171,7 +279,24 @@ int main()
         tilda();
         print("~~~~~~~~~FINISH OF THE TESBENCH~~~~~~~~~");
         tilda();
+        */
         
+        /*
+        RingList<int> obj1(3);
+        obj1++;
+        obj1.getList();
+        ++obj1;
+        obj1.getList();
+        obj1--;
+        obj1.getList();
+        --obj1;
+        obj1.getList();
+        */
+
+        RingList<unsigned> obj2;
+        std::cin  >> obj2;
+        std::cout << obj2;
+
         return EXIT_SUCCESS;
 }
 
