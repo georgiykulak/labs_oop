@@ -55,7 +55,10 @@ struct RingList {
         
         template <class F>
         friend F operator-- (RingList<F> & obj, int);
+
+        operator std::vector<T>();
         
+        operator T*();
 };
 
 template <class F>
@@ -144,7 +147,32 @@ bool operator!=
         return obj1.getCurrent() != obj2.getCurrent();
 }
 
+template <class T>
+RingList<T>::operator std::vector<T>()
+{
+        std::vector<T> vec;
+        
+        for ( auto i = this->count(); i; --i ) {
+                vec.push_back(this->getCurrent());
+                this->moveRight();
+        }
+        
+        return vec;
+}
 
+template <class T>
+RingList<T>::operator T*()
+{
+        auto size = this->count();
+        T* arr = new T [size];
+        
+        for ( auto i = 0; i < size; ++i ) {
+                *(arr + i) = this->getCurrent();
+                this->moveRight();
+        }
+        
+        return arr;
+}
 
 inline void print(std::string s)
 {
