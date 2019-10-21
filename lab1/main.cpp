@@ -1,3 +1,8 @@
+//Написать Testbench по второй лабе, оформить отчет
+//
+//Распределить код по минимум 6 файлам (main.cpp, ringlist.hpp, ringlist1.cpp, ringlist2.cpp, testbench.hpp, testbench.cpp)
+//и сделать Makefile (бинарник test_ringlist)
+//
 //Добавить вывод ошибок при неправильной работе с классом
 
 #include <iostream>
@@ -205,7 +210,7 @@ std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
 
 int main()
 {
-        /*
+        
         tilda();
         print("~~~~~~THE TESTBENCH IS STARTING...~~~~~~");
         tilda();
@@ -326,7 +331,7 @@ int main()
         tilda();
         print("~~~~~~~~~FINISH OF THE TESBENCH~~~~~~~~~");
         tilda();
-        */
+        
         
         /*
         RingList<int> obj1(3);
@@ -340,9 +345,10 @@ int main()
         obj1.getList();
         */
 
-        RingList<unsigned> obj2;
+        /*RingList<unsigned> obj2;
         std::cin  >> obj2;
         std::cout << obj2;
+        */
 
         return EXIT_SUCCESS;
 }
