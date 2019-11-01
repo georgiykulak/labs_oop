@@ -1,23 +1,21 @@
 #include <iostream>
 
-template <typename T>
-struct Position {
-        protected:
-        T x;
-        T y;
-
+struct ChessFigure {
+        private:
+        uint8_t x;
+        uint8_t y;
+        
         public:
-        virtual void setPos(T const& x, T const& y) = 0;
-        virtual bool inField() const = 0;
-        virtual std::string getPos() const = 0;
-};
-
-struct ChessFigure : public Position<uint8_t> {  
-        public:
+        virtual ~ChessFigure() {}
+        
         virtual bool check(
                 uint8_t const&,
                 uint8_t const&)
                 const = 0;
+
+        int8_t getX() const { return x; }
+        
+        int8_t getY() const { return y; }
 
         virtual void setPos(
                 uint8_t const& x,
@@ -27,8 +25,8 @@ struct ChessFigure : public Position<uint8_t> {
                         return;
                 }
         
-                this->x = x;
-                this->y = y;
+                this->x = x - 1;
+                this->y = y - 1;
         }
     
         bool inField(
@@ -36,19 +34,22 @@ struct ChessFigure : public Position<uint8_t> {
                 uint8_t const& y)
                 const
         {
-                return x <= 16 && y <= 16;
+                return x < 8 && y < 8;
         }
 
         std::string getPos() const
         {
-                if ( !inField(this->x, this->y) ) {
-                        return "error: wrong coordinates";
+                if ( !inField(x, y) ) {
+                        return "error: \
+                                wrong coordinates";
                 }
 
                 std::string str;
-                str += 'A' - 1 + x;
-                str += ' ';
-                str += '0' + y;
+                str += '<';
+                str += 'A' + x;
+                str += '1' + y;
+                str += '>';
+
                 return str;
         }
 };
@@ -60,12 +61,16 @@ struct Castle : public ChessFigure {
                 uint8_t const& y)
                 const
         {
-                return x == this->x && y != this->y ||
-                       y == this->y && x != this->x;
+                return x == getX() && y != getY() ||
+                       y == getY() && x != getX();
         }
 
         virtual ~Castle() {}
-        Castle() {}
+        Castle(uint8_t const& x = 0,
+                uint8_t const& y = 0)
+        {
+                setPos(x, y);
+        }
 
         virtual bool check(
                 uint8_t const& x,
@@ -76,7 +81,7 @@ struct Castle : public ChessFigure {
                        _straight(x, y);
         }
 };
-
+/*
 struct Officer : public ChessFigure {
         public:
         virtual bool _cross(
@@ -158,7 +163,27 @@ struct King : public Queen {
         bool moved;
 
         public:
-                                                        //переопределить методы
+        virtual bool _straight(
+                uint8_t const& x,
+                uint8_t const& y)
+                const
+        {
+                return (this->x + 1 == x ||
+                        this->x - 1 == x) &&
+                        this->y == y      ||
+                       (this->y + 1 == y ||
+                        this->y - 1 == y) &&
+                        this->x == x;
+        }
+
+        virtual bool _straight(
+                uint8_t const& x,
+                uint8_t const& y)
+                const
+        {
+                return 1;
+        }
+
         virtual bool _special(
                 uint8_t const& x,
                 uint8_t const& y)
@@ -197,9 +222,29 @@ struct Pawn : public King {
 
         //
 };
+*/
+
+void print(std::string const& obj)
+{
+        std::cout << obj << std::endl;
+}
+
+void get_point(int const& x, int const& y)
+{
+        std::cout << x << " " << y << "\n";
+}
+
+void yes_no(bool const& flag)
+{
+        std::cout << (flag ? "yes\n" : "no\n");
+}
 
 int main()
 {
-        
+        Castle obj1;
+        obj1.setPos(1, 2);
+        print(obj1.getPos());
+        get_point(obj1.getX(), obj1.getY());
+        yes_no( obj1.check(1, 4) );
         return 0;
 }
