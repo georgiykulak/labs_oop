@@ -1,6 +1,3 @@
-//ЖЕЛАТЕЛЬНО ИСПОЛЬЗОВАТЬ ДВА ФАЙЛА
-//Вернуть инит
-//Заменить файл в инит на шаредпоинтер
 //Добавить вывод ошибок
 
 #include <iostream>
@@ -12,42 +9,80 @@
 
 struct Sorter {
         private:
-        std::vector<std::string> block; //a blocks
-        size_t number;                  //N
-        size_t counter;                 //K
+        std::vector<std::vector<std::string>> block; // "a"
+        size_t number;                               // "N"
+        size_t counter;                              // "K"
 
         public:
-        Sorter();
-        Sorter(std::string path);
         ~Sorter();
-        std::string const& getBlock(size_t) const;
-        std::size_t const& getNumber()      const;
-        std::size_t const& getCounter()     const;
-        std::vector<std::string> const& 
-                        getAllBlocks()      const;
-        Sorter& sort(std::string path);
+        Sorter();
+        Sorter(std::string const& path);
+        Sorter(std::string const&, std::string const&);
+        std::string const&
+                getElem(size_t const& i,
+                                size_t const& j)
+                                          const;
+        std::vector<std::string> const&
+                  getBlock(size_t const&) const;
+        std::size_t const& getNumber()    const;
+        std::size_t const& getCounter()   const;
+        std::vector<std::vector<std::string>> const&
+                           getAllBlocks() const;
+        Sorter& sort(std::string const& path);
+        Sorter& sort(std::string const& src_path,
+                     std::string const& dst_path);
 
         private:
+        void _sort();
         void  _read(std::fstream& file);
-        void _write(std::fstream& file);
-        void _erase(std::fstream&, std::string);
+        void _write(std::fstream& file) const;
+        void _erase(std::fstream&, std::string const&);
 };
+
+inline void test_sort1(std::string path)
+{
+        Sorter sorter;
+        std::vector<std::vector<std::string>> test;
+        
+        sorter.sort(path);
+        
+	test = sorter.getAllBlocks();
+        std::cout << sorter.getNumber()  << "\n";
+	std::cout << sorter.getCounter() << "\n"; 
+	
+        for ( auto const& v: test ) {
+                for ( auto const& s: v ) {
+                        std::cout << s << " ";
+                }
+                std::cout << "\n";
+        }
+}
+
+inline void test_sort2(std::string path_in,
+                       std::string path_out)
+{
+        Sorter sorter(path_in, path_out);
+        std::vector<std::vector<std::string>> test;
+        
+	test = sorter.getAllBlocks();
+        std::cout << sorter.getNumber()  << "\n";
+	std::cout << sorter.getCounter() << "\n"; 
+	
+        for ( auto const& v: test ) {
+                for ( auto const& s: v ) {
+                        std::cout << s << " ";
+                }
+                std::cout << "\n";
+        }
+}
 
 int main()
 {
-        Sorter sorter;
-        std::string path = "/home/gosha/Desktop/test.txt";
-        std::vector<std::string> test;
-        
-        sorter.sort(path);
-        test = sorter.getAllBlocks();
-        std::cout << test.size() << "\n";
-        for ( auto const& i: test ) {
-                std::cout << i << " ";
-        }
-        std::cout << "\n";
-        
-        return 0;
+	test_sort1("/home/gosha/Desktop/test1.txt");
+	test_sort2("/home/gosha/Desktop/test2.txt",
+                   "/home/gosha/Desktop/out.txt");
+
+	return EXIT_SUCCESS;
 }
 
 bool operator< (std::string s1, std::string s2)
@@ -65,40 +100,55 @@ bool operator< (std::string s1, std::string s2)
     return sz1 < sz2;
 }
 
+Sorter::~Sorter()
+{}
+
 Sorter::Sorter()
 {}
 
-Sorter::Sorter(std::string path)
+Sorter::Sorter(std::string const& path)
 {
         sort(path);
 }
 
-Sorter::~Sorter()
-{}
+Sorter::Sorter(std::string const& src_path,
+               std::string const& dst_path)
+{
+        sort(src_path, dst_path);
+}
 
 inline std::size_t const& Sorter::getNumber()  const
 {
-        return   number;
+        return  number;
 }
 
 inline std::size_t const& Sorter::getCounter() const
 {
-        return  counter;
+        return counter;
 }
 
-inline std::string const& 
-                Sorter::getBlock(size_t i) const
+inline std::string const&
+        Sorter::getElem(
+                size_t const& i,
+                size_t const& j)
+                const
+{
+        return block[i][j];
+}
+
+inline std::vector<std::string> const& 
+        Sorter::getBlock(size_t const& i) const
 {
         return block[i];
 }
 
-inline std::vector<std::string> const&
-                Sorter::getAllBlocks() const
+inline std::vector<std::vector<std::string>> const&
+        Sorter::getAllBlocks() const
 {
-        return    block;
+        return block;
 }
 
-inline Sorter& Sorter::sort(std::string path)
+inline Sorter& Sorter::sort(std::string const& path)
 {
         std::fstream file;
         std::string temp;
@@ -107,27 +157,64 @@ inline Sorter& Sorter::sort(std::string path)
         
         if ( !file.is_open() ) {
                 std::cout << "Error: file is not open\n";
-                goto out;
+                file.close();
+                return *this;
         }
         
         _read(file);
         
-        std::sort( block.begin(), block.end(), 
-                   [](std::string s1, std::string s2)
-                {
-                        return s1 < s2;
-                }
-        );
-        
+        _sort();
+       
         _erase(file, path);
 
         _write(file);
 
-        out:
-        
         file.close();
         
         return *this;
+}
+
+inline Sorter& Sorter::sort(std::string const& src_path,
+                            std::string const& dst_path)
+{
+        std::fstream ifile;
+        std::fstream ofile;
+        std::string temp;
+        
+        ifile.open(src_path);
+        ofile.open(dst_path);
+        
+        if ( !ifile.is_open() || !ofile.is_open() ) {
+                std::cout << "Error: file is not open\n";
+                ifile.close();
+                ofile.close();
+                return *this;
+        }
+        
+        _read(ifile);
+
+        ifile.close();
+
+        _sort();
+
+        _write(ofile);
+
+        ofile.close();
+
+        return *this;
+}
+
+inline void Sorter::_sort()
+{
+        for ( auto& blk: block ) {
+                std::sort(
+                          blk.begin(),
+                          blk.end(), 
+                          [](std::string str1,
+                             std::string str2)
+                          { return str1 < str2; }
+                );
+        }
 }
 
 inline void Sorter::_read(std::fstream& file)
@@ -142,29 +229,35 @@ inline void Sorter::_read(std::fstream& file)
         file >> counter;
         file.seekg(1, std::ios::cur);
         
-        for ( size_t i = 0; i < number; ++i ) {
-                file >> temp;
-                block.push_back(temp);
-                temp.clear();
-                if ( file.eof() || file.fail() ) break;
+        block.resize(number,
+		     std::vector<std::string>(counter));
+        
+	for ( auto& v: block ) {
+                for ( auto& s: v ) {
+                        file >> s;
+                }
         }
-
+        
         file.seekg(0, std::ios::beg);
 }
 
-inline void Sorter::_write(std::fstream& file)
+inline void Sorter::_write(std::fstream& file) const
 {
         file << number << "\n";
         file << counter << "\n";
-        for ( auto const& i: block ) {
-                file << i << " ";
+        
+        for ( auto const& v: block ) {
+                for ( auto const& s: v ) {
+                        file << s << " ";
+                }
+                file << "\n";
         }
         
         file.seekg(0, std::ios::beg);
 }
 
 inline void Sorter::_erase(std::fstream& file,
-                           std::string path)
+                           std::string const& path)
 {
         file.close();
         remove(path.c_str());
