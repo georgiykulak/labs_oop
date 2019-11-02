@@ -1,5 +1,3 @@
-//доделать пешку
-//закончить тестбенч
 #include <iostream>
 
 struct ChessFigure {
@@ -15,9 +13,9 @@ struct ChessFigure {
                 uint8_t const&)
                 const = 0;
 
-        int8_t getX() const { return x; }
+        uint8_t getX() const { return x; }
         
-        int8_t getY() const { return y; }
+        uint8_t getY() const { return y; }
 
         virtual void setPos(
                 uint8_t const& x,
@@ -248,25 +246,34 @@ struct King : public Queen {
                        _special(x, y)  );
         }
 };
-/*
+
 struct Pawn : public King {
         public:
         ~Pawn() {}
-        Pawn() : moved{false}
-        {}
+        
+        Pawn(uint8_t const& x = 1,
+                uint8_t const& y = 2)
+        {
+                if ( inField(x, y) ) {
+                        setPos(x, y);
+                }
+                else    setPos(1, 2);
+        }
 
-        bool _special(...)
+        bool _special(
+                uint8_t const& x,
+                uint8_t const& y)
+                const
+        {
+                return ((2 == getY() && 4 == y) ||
+                        (7 == getY() && 5 == y)) &&
+                         x == getX();
+        }
 };
-*/
 
 void print(std::string const& obj)
 {
         std::cout << obj << std::endl;
-}
-
-void get_point(int const& x, int const& y)
-{
-        std::cout << x << " " << y << "\n";
 }
 
 void yes_no(bool const& flag)
@@ -274,27 +281,106 @@ void yes_no(bool const& flag)
         std::cout << (flag ? "yes\n" : "no\n");
 }
 
+void tilda()
+{
+        std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+}
+
 int main()
 {
+        tilda();
+        print("~~~~~~~~~TESTBENCH~~~~~~~~~");
+        tilda();
+        tilda();
+        tilda();
+        print("Test 1: Creating objects");
+        print("and checking moves on field");
+        tilda();
+        
+        print("Castle:");
         Castle castle;
         castle.setPos(1, 2);
         print(castle.getPos());
-        get_point(castle.getX(), castle.getY());
         yes_no(castle.check(1, 4));
-        
-        Officer officer(2, 5);
-        yes_no(officer.check(1, 6));
-        
-        Horse horse;
-        yes_no(horse.check(3, 3));
-        
-        Queen queen;
-        print(queen.getPos());
-        queen.setPos(5, 1);
-        yes_no(queen.check(5, 3));
+        castle.setPos(2, 2);
+        print(castle.getPos());
+        yes_no(castle.check(1, 4));
+        tilda();
 
+        print("Officer:");
+        Officer officer(2, 5);
+        print(officer.getPos());
+        yes_no(officer.check(1, 6));
+        officer.setPos(5, 3);
+        print(officer.getPos());
+        yes_no(officer.check(6, 5));
+        tilda();
+        
+        print("Horse:");
+        Horse horse;
+        print(horse.getPos());
+        yes_no(horse.check(3, 3));
+        horse.setPos(7, 8);
+        print(horse.getPos());
+        yes_no(horse.check(7, 6));
+        tilda();
+        
+        print("Queen:");
+        Queen queen;
+        queen.setPos(5, 1);
+        print(queen.getPos());
+        yes_no(queen.check(5, 3));
+        print(queen.getPos());
+        yes_no(queen.check(4, 6));
+        tilda();
+
+        print("King:");
         King king;
-        yes_no(king.check(5, 2));
+        king.setPos(8, 4);
+        print(king.getPos());
+        yes_no(king.check(7, 3));
+        print(king.getPos());
+        yes_no(king.check(6, 3));
+        tilda();
+        
+        print("Pawn:");
+        Pawn pawn(2, 2);
+        print(pawn.getPos());
+        yes_no(pawn.check(2, 4));
+        pawn.setPos(2, 4);
+        print(pawn.getPos());
+        yes_no(pawn.check(2, 6));
+        tilda();
+
+        print("Test 2: Dynamic");
+        print("memory checking");
+        tilda();
+
+        print("ChessFigure -> King");
+        ChessFigure* ptr1 = new King(6, 2);
+        print(ptr1->getPos());
+        //must be "yes" because ptr point on King object
+        yes_no(ptr1->check(7, 2));
+        delete ptr1;
+        tilda();
+
+        print("Queen -> Pawn");
+        Queen* ptr2 = new Pawn(6, 3);
+        print(ptr2->getPos());
+        //must be "no" because pawn can't move like that
+        yes_no(ptr2->check(8, 5));
+        delete ptr2;
+        tilda();
+
+        print("Officer -> Horse");
+        Officer* ptr3 = new Horse(5, 5);
+        print(ptr3->getPos());
+        //must be "yes" because horse can move like that
+        yes_no(ptr3->check(7, 6));
+        delete ptr3;
+        tilda();
+        tilda();
+        tilda();
         
         return EXIT_SUCCESS;
 }
