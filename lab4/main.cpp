@@ -1,3 +1,4 @@
+//ЖЕЛАТЕЛЬНО ИСПОЛЬЗОВАТЬ ДВА ФАЙЛА
 //Вернуть инит
 //Заменить файл в инит на шаредпоинтер
 //Добавить вывод ошибок
@@ -12,18 +13,18 @@
 struct Sorter {
         private:
         std::vector<std::string> block; //a blocks
-        std::size_t number;             //N
-        std::size_t counter;            //K
+        size_t number;                  //N
+        size_t counter;                 //K
 
         public:
         Sorter();
         Sorter(std::string path);
         ~Sorter();
         std::string const& getBlock(size_t) const;
-        std::size_t const& getNumber()  const;
-        std::size_t const& getCounter() const;
+        std::size_t const& getNumber()      const;
+        std::size_t const& getCounter()     const;
         std::vector<std::string> const& 
-                        getAllBlocks()  const;
+                        getAllBlocks()      const;
         Sorter& sort(std::string path);
 
         private:
@@ -132,7 +133,6 @@ inline Sorter& Sorter::sort(std::string path)
 inline void Sorter::_read(std::fstream& file)
 {
         std::string temp;
-        size_t cnt = number;
 
         file.seekg(0, std::ios::beg);
 
@@ -142,12 +142,12 @@ inline void Sorter::_read(std::fstream& file)
         file >> counter;
         file.seekg(1, std::ios::cur);
         
-        while ( !file.eof() && --cnt ) {
+        for ( size_t i = 0; i < number; ++i ) {
                 file >> temp;
                 block.push_back(temp);
-                if ( file.fail() )
-                        break;
-        }/////////////////////////////////////////////////////////////остановился здесь
+                temp.clear();
+                if ( file.eof() || file.fail() ) break;
+        }
 
         file.seekg(0, std::ios::beg);
 }
