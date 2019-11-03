@@ -1,9 +1,7 @@
-//Написать Testbench по второй лабе, оформить отчет
-//
-//Распределить код по минимум 6 файлам (main.cpp, ringlist.hpp, ringlist1.cpp, ringlist2.cpp, testbench.hpp, testbench.cpp)
+//Распределить код по минимум 6 файлам (main.cpp, source.hpp, source.cpp, overload.cpp, testbench.hpp, testbench.cpp)
 //и сделать Makefile (бинарник test_ringlist)
 //
-//Добавить вывод ошибок при неправильной работе с классом
+//Сделать оператор присваивания
 
 #include <iostream>
 #include <vector>
@@ -24,7 +22,7 @@ struct RingList {
         //RingList& operator=(RingList const & obj);
         RingList(std::vector<T> const& vec);
         RingList(T* const arr, size_t size);
-        T& getCurrent() const;
+        T getCurrent() const;
         T popCurrent();
         void getList();
         T& setCurrent(std::istream& obj = std::cin);
@@ -76,7 +74,6 @@ T RingList<T>::operator>> (T& obj)
 {
         return obj = popCurrent();
 }
-
 
 template <class T>
 T RingList<T>::operator<< (T& obj)
@@ -409,7 +406,7 @@ RingList<T>::RingList(std::vector<T> const& vec) :
         curr{nullptr}
 {
         if ( vec.empty() )
-                std::cout << "empty vector\n"; //или по-другому вывести ошибку
+                std::cerr << "empty vector\n";
 
         for ( auto const& elem: vec ) {
                 _makeCurrent(elem);
@@ -421,7 +418,7 @@ RingList<T>::RingList(T* const arr, size_t size) :
         curr{nullptr}
 {
         if ( arr == nullptr )
-                std::cout << "empty array\n"; //или по-другому вывести ошибку
+                std::cerr << "empty array\n";
 
         for ( size_t i = 0; i < size; ++i ) {
                 _makeCurrent(*(arr + i));
@@ -429,19 +426,24 @@ RingList<T>::RingList(T* const arr, size_t size) :
 }
 
 template <class T>
-inline T& RingList<T>::getCurrent() const
+inline T RingList<T>::getCurrent() const
 {
-        return curr->data; //добавить позднее ошибку для случая когда curr == nullptr
+        if ( !curr )
+                return 0;
+        return curr->data;
 }
 
 template <class T>
 inline T RingList<T>::popCurrent()
 {
+        if ( !curr )
+                return 0;
+        
         T tempdata = curr->data;
         
         _deleteCurrent();
 
-        return tempdata; //добавить позднее ошибку для случая когда curr == nullptr
+        return tempdata;
 }
 
 template <class T>
@@ -537,7 +539,6 @@ inline bool RingList<T>::compare(RingList<T> & obj)
               empty() && !obj.empty()    )
                 return false;
         
-        bool flag = true;
         Bead* temp = curr->prev;
         size_t counter = 0;
 
@@ -559,7 +560,7 @@ inline bool RingList<T>::compare(RingList<T> & obj)
         moveRight();
         obj.moveRight();
         
-        return flag;
+        return true;
 }
 
 template <class T>

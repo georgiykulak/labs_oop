@@ -1,3 +1,5 @@
+//Сделать 5 файлов: main.cpp, source.hpp, source.cpp, testbench.hpp, testbench.cpp + Makefile
+
 #include <iostream>
 
 struct ChessFigure {

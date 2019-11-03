@@ -1,4 +1,6 @@
-//Добавить вывод ошибок
+//Распихать все на 8 файлов: main.cpp, testbench.hpp, testbench.hpp, source.hpp, source.cpp, sort.hpp(метод сортировки и перегруженный оператор для строк),
+//sort.cpp, all_in.hpp(сюда включить все заголовочные файлы)
+//Сделать Makefile
 
 #include <iostream>
 #include <stdio.h>
@@ -156,7 +158,7 @@ inline Sorter& Sorter::sort(std::string const& path)
         file.open(path);
         
         if ( !file.is_open() ) {
-                std::cout << "Error: file is not open\n";
+                std::cerr << "Error: file is not open\n";
                 file.close();
                 return *this;
         }
@@ -185,7 +187,7 @@ inline Sorter& Sorter::sort(std::string const& src_path,
         ofile.open(dst_path);
         
         if ( !ifile.is_open() || !ofile.is_open() ) {
-                std::cout << "Error: file is not open\n";
+                std::cerr << "Error: file is not open\n";
                 ifile.close();
                 ofile.close();
                 return *this;

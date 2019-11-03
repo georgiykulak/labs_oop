@@ -1,11 +1,12 @@
-//Если будут проблемы с удалением объекта - юзать шаредптр
-//Сделать правильную перегрузку []
-//Добавить транспонирование
-//Добавить деление
-//Добавить итератор и поменять все пробежки по матрице на пробежке по итераторам итераторов
-
+//Переделать детерминирование (избавиться от векторов)
+//Сделать деление матриц
+//Сделать вместо (.. , ..) [..][..]
+//Сделать оператор присваивания
+//Сделать 5 файлов: main.cpp, source.hpp, source.cpp, testbench.hpp, testbench.cpp + Makefile
 #include <iostream>
 #include <cmath>
+#include <memory>
+#include <vector>
 
 template <class T>
 struct Matrix {
@@ -26,8 +27,7 @@ struct Matrix {
         T operator* ();
         
         private:
-        T _determinate1(Matrix<T> det);
-        T _determinate2(Matrix<T> det);
+        T _determinate(std::vector<std::vector<T>> det); //переделать
         
         public:
         Matrix<T> const& operator+ () const;
@@ -36,17 +36,12 @@ struct Matrix {
         Matrix<T> operator* (T const& obj);
         Matrix<T> operator+ (Matrix<T> & obj);
         Matrix<T> operator- (Matrix<T> & obj);
-        T& operator() (size_t i, size_t j) const;             // [][]
-        Matrix<T>& operator() (T*  arr);
-        Matrix<T>& operator() (T** det);
+        T& operator() (size_t i, size_t j) const;
 
         private:
         void _alloc(size_t row, size_t col);
         void _delete();
 };
-
-//template <class F>
-//Matrix<F>& operator* (F const& obj, Matrix<F> & obj);
 
 template <class F>
 std::istream& operator>>
@@ -54,7 +49,7 @@ std::istream& operator>>
 
 template <class F>
 std::ostream& operator<<
-        (std::ostream& out, Matrix<F> /*const*/& obj);
+        (std::ostream& out, Matrix<F> obj);
 
 template <class F>
 bool operator<
@@ -82,26 +77,50 @@ bool operator!=
 
 int main()
 {
+        std::cout << "~~~~~TESTBENCH~~~~~\n";
+        std::cout << "First matrix:\n";
         Matrix<int> det1(3, 4);
         det1.fill();
         std::cout << det1 << "\n";
+        std::cout << "Second matrix:\n";
         Matrix<int> det2(4, 5);
         det2.fill();
         std::cout << det2 << "\n";
-        Matrix<int> det3 = det1 * det2;
+        std::cout << "Third matrix:\n";
+        Matrix<int> det3;
+        det3.resize(3, 5);
+        det3.fill();
         std::cout << det3 << "\n";
-        
-        Matrix<double> det(4, 4);
+        std::cout << "Multipling\n";
+        Matrix<int> det4 = det1 * det2;
+        std::cout << det4 << "\n";
+        std::cout << "Adding third and fourth\n";
+        std::cout << det4 + det3 << "\n";
+        std::cout << "Determinating\n";
+        Matrix<long> det(4, 4);
         det.fill();
         std::cout << det  << "\n";
         std::cout << *det << "\n";
+        std::cout << "Comparing third and fourth\n";
+        if ( det3 == det4 ) {
+                std::cout << "equal\n";
+        }
+        if ( det3 != det4 ) {
+                std::cout << "not equal\n";
+        }
+        if ( det3 < det4 ) {
+                std::cout << "smaller\n";
+        }
+        else {
+                std::cout << "bigger or equal\n";
+        }
+
         return 0;
 }
 
 template <class T>
 Matrix<T>::Matrix(size_t row, size_t col)
 {
-        //попробовать быстрый метод со степика
         _alloc(row, col);
 }
 
@@ -171,59 +190,43 @@ T Matrix<T>::operator* ()
                 std::cout << "Wrong matrix size!\n";
                 return 0;
         }
-        else if (rows == 1) {
+        else if ( rows == 1 ) {
                 return **array;
         }
-        
-        return _determinate2(*this);
-}
 
-template <class T>
-T Matrix<T>::_determinate1(Matrix<T> det) //make with no recursion
-{
-        //                                                      finished here
-}
+        std::vector<std::vector<T>> vec(rows);
 
-template <class T>
-T Matrix<T>::_determinate2(Matrix<T> det) //doesn`t work
-{
-        size_t sz = det.sizeX() - 1;
-        T dt = 0;
-        T pref;
-        T  swp;
-        
-        if ( sz == 1 ) {
-                return det(0, 0) * det(1, 1) - 
-                       det(0, 1) * det(1, 0);  //вычисление
-        }
-        
-        for ( size_t k = 0; k < sz + 1; ++k ) {
-                Matrix<T> temp(sz, sz);
-                size_t m = 0;
-                size_t n = 0;
-
-                pref = det(0, k);
-
-                for ( size_t i = 1; i < sz; ++i ) {
-                        for ( size_t j = 0; j < k; ++j ) {
-                                swp =  det(i, j);
-                                temp(m, n) = swp;
-                                ++n;
-                        }
-                        for ( size_t j = k + 1; j < sz; ++j ) {
-                                swp =  det(i, j);
-                                temp(m, n) = swp;
-                                ++n;
-                        }
-                        ++m;
+        for ( size_t i = 0; i < rows; ++i ) {
+                for ( size_t j = 0; j < columns; ++j ) {
+                        vec[i].push_back(array[i][j]);
                 }
-                
-                dt += pref * ( k % 2 ?
-                (-_determinate2(temp)):
-                  _determinate2(temp)
-                );
         }
-        
+
+        return _determinate(vec);
+}
+
+template <class T>
+T Matrix<T>::_determinate(std::vector<std::vector<T>> det)
+{
+        T dt = 0;
+        size_t size = det.size();
+        if ( size == 2 ) {
+                return det[0][0] * det[1][1] - det[0][1] * det[1][0];
+        }
+        size_t j;
+        std::vector<std::vector<T>> vec(size - 1);
+        for (size_t i = 0; i < size; ++i) {
+                for (j = 0; j < size - 1; ++j) {
+                        if (j < i) {
+                                vec[j] = det[j];
+                        }
+                        else {
+                                vec[j] = det[j + 1];
+                        }
+                }
+                dt += pow(double(-1), (i + j)) * _determinate(vec) * det[i][size - 1];
+        }
+
         return dt;
 }
 
@@ -248,7 +251,7 @@ Matrix<T> Matrix<T>::operator- ()
 }
 
 template <class T>
-Matrix<T> Matrix<T>::operator* (Matrix<T> const& obj) //позже сделать деление
+Matrix<T> Matrix<T>::operator* (Matrix<T> const& obj)
 {
         size_t szX = this->sizeX();
         size_t szY =   obj.sizeY();
@@ -338,52 +341,6 @@ T& Matrix<T>::operator() (size_t i, size_t j) const
 }
 
 template <class T>
-Matrix<T>& Matrix<T>::operator() (T* arr)
-{
-        if ( arr == nullptr )
-                return *this;
-
-        size_t size = sizeof(arr) / sizeof(T);
-        size_t sz;
-
-        if ( std::pow(sz = std::sqrt(size), 2) == size ) {
-                std::cout << "Wrong size of determinant\n";
-                return *this;
-        }
-
-        resize(sz, sz);
-
-        for ( size_t i = 0, c = 0; i < sz; ++i, ++c ) {
-                for ( size_t j = 0; j < sz; ++j, ++c ) {
-                        *(*(array + i) + j) = *(arr + c);
-                }
-        }
-        
-        return *this;
-}
-
-template <class T>
-Matrix<T>& Matrix<T>::operator() (T** det)
-{
-        if ( det == nullptr )
-                return *this;
-        
-        size_t size = sizeof(det) / sizeof(T*);
-        size_t sz = size;
-        
-        for ( size_t i = 0; i < sz; ++i ) {
-                if ( sz != sizeof(*det) / sizeof(T) ) {
-                        std::cout << "error\n";
-                        return *this;
-                }
-        }
-
-        //////////////////////////////////////////////        filling
-
-        return *this;
-}
-
-template <class T>
 void Matrix<T>::_alloc(size_t row, size_t col)
 {
         rows = row;
@@ -412,14 +369,6 @@ void Matrix<T>::_delete()
         rows = 0;
 }
 
-/*
-template <class F>
-Matrix<F>& operator* (F const& obj, Matrix<F> & obj)
-{
-        //////////////////////
-        return obj;
-}
-*/
 template <class F>
 std::istream& operator>>
         (std::istream&  in, Matrix<F> & obj)
@@ -438,7 +387,7 @@ std::istream& operator>>
 
 template <class F>
 std::ostream& operator<<
-        (std::ostream& out, Matrix<F> /*const*/& obj)
+        (std::ostream& out, Matrix<F> obj)
 {
         size_t row = obj.sizeX();
         size_t col = obj.sizeY();
