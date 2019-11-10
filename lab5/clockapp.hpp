@@ -3,29 +3,48 @@
 
 namespace app
 {
-        bool watch      = false;
-        bool timer      = false;
-        bool stopwatch  = false;
-        bool worldwatch = false;
-        bool pomadoro   = false;
+        bool watch_exist()
+        {
+                #if defined(DEF_WATCH)
+                        return true;
+                #else
+                        return false;
+                #endif
+        }
+
+        bool timer_exist()
+        {
+                #if defined(DEF_TIMER)
+                        return true;
+                #else
+                        return false;
+                #endif
+        }
+
+        bool stopwatch_exist()
+        {
+                #if defined(DEF_STOPWATCH)
+                        return true;
+                #else
+                        return false;
+                #endif
+        }
+        
+        bool worldwatch_exist()
+        {
+                #if defined(DEF_WORLDWATCH)
+                        return true;
+                #else
+                        return false;
+                #endif
+        }
+        
+        bool pomadoro_exist()
+        {
+                #if defined(DEF_POMADORO)
+                        return true;
+                #else
+                        return false;
+                #endif
+        }
 }
-
-#if defined(DEF_WATCH)
-        app::watch      = true;
-#endif
-
-#if defined(DEF_TIMER)
-        app::timer      = true;
-#endif
-
-#if defined(DEF_STOPWATCH)
-        app::stopwatch  = true;
-#endif
-
-#if defined(DEF_WORLDWATCH)
-        app::worldwatch = true;
-#endif
-
-#if defined(DEF_POMADORO)
-        app::pomadoro   = true;
-#endif
