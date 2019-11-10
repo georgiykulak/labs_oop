@@ -1,9 +1,11 @@
 #pragma once
 
-class WorldTime {
+#define DEF_WORLDWATCH
+
+class WorldWatch {
         public:
-        ~WorldTime();
-        WorldTime();
-        WorldTime(WorldTime const&);
-        WorldTime& operator= (WorldTime const&);
+        ~WorldWatch();
+        WorldWatch();
+        WorldWatch(WorldWatch const&);
+        WorldWatch& operator= (WorldWatch const&);
 };
