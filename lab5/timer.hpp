@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEF_TIMER
+
 class Timer {
         public:
         ~Timer();

@@ -1,5 +1,7 @@
 #pragma once
 
+#define DEF_STOPWATCH
+
 class StopWatch {
         public:
         ~StopWatch();
