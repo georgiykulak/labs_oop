@@ -3,10 +3,6 @@
 #include <iostream>
 
 struct ChessFigure {
-        private:
-        uint8_t x;
-        uint8_t y;
-        
         public:
         virtual ~ChessFigure() {}
         
@@ -54,6 +50,10 @@ struct ChessFigure {
 
                 return str;
         }
+        
+        private:
+        uint8_t x;
+        uint8_t y;
 };
 
 struct Castle : virtual public ChessFigure {

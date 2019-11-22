@@ -10,26 +10,19 @@
 
 template <class T>
 struct Matrix {
-        private:
-        T** array;
-        size_t    rows;
-        size_t columns;
-
         public:
-        Matrix(size_t row = 1, size_t col = 1);
         ~Matrix();
+        Matrix(size_t row = 1, size_t col = 1);
         Matrix(Matrix<T> const& obj);
         Matrix<T>& operator= (Matrix<T> const& obj);
+        
         size_t sizeX() const {    return rows; }
         size_t sizeY() const { return columns; }
+        
         void resize(size_t row, size_t col);
         void fill();
+        
         T operator* ();
-        
-        private:
-        T _determinate(std::vector<std::vector<T>> det); //переделать
-        
-        public:
         Matrix<T> const& operator+ () const;
         Matrix<T> operator- ();
         Matrix<T> operator* (Matrix<T> const& obj);
@@ -37,8 +30,13 @@ struct Matrix {
         Matrix<T> operator+ (Matrix<T> & obj);
         Matrix<T> operator- (Matrix<T> & obj);
         T& operator() (size_t i, size_t j) const;
-
+        
         private:
+        T** array;
+        size_t    rows;
+        size_t columns;
+        
+        T _determinate(std::vector<std::vector<T>> det); //переделать
         void _alloc(size_t row, size_t col);
         void _delete();
 };
