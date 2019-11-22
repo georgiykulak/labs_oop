@@ -5,7 +5,7 @@
 #include <string>
 
 /**********************************************
-				Definition
+		Definition
 **********************************************/
 
 template <class T = long double>
@@ -96,7 +96,7 @@ bool operator!=
 (RingList<F> const& obj1, RingList<F> const& obj2);
 
 /**********************************************
-				Implementation
+	        Implementation
 **********************************************/
 
 template <class T>

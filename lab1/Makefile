@@ -1,16 +1,17 @@
 CXX = g++
-CXXFLAGS = -c
-STD = -std=c++11
+CXXFLAGS = -c -std=$(STD)
+STD = c++11
+BINARY = test.out
 
 all: main.o testbench.o 
-	$(CXX) -o test_ringlist $^ $(STD)
+	$(CXX) $^ -o $(BINARY)
 
 main.o: main.cpp testbench.hpp
-	$(CXX) $(CXXFLAGS) main.cpp $(STD) -o $@
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 testbench.o: testbench.cpp testbench.hpp source.hpp
-	$(CXX) $(CXXFLAGS) testbench.cpp $(STD) -o $@
+	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:
 	rm *.o
-	rm test_ringlist
+	rm $(BINARY)
