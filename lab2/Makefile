@@ -3,6 +3,8 @@ CXXFLAGS = -c -std=$(STD)
 STD = c++11
 BINARY = test.out
 
+.PHONY: clean
+
 $(BINARY): all
 
 all: main.o testbench.o 
