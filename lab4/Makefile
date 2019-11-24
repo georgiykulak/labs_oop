@@ -5,6 +5,8 @@ BINARY = test.out
 
 .PHONY: fill erase clean
 
+$(BINARY): all
+
 all: main.o testbench.o source.o overload.o
 	$(CXX) $^ -o $(BINARY)
 	./fill

@@ -3,6 +3,10 @@ CXXFLAGS = -c -std=$(STD)
 STD = c++11
 BINARY = test.out
 
+.PHONY: clean
+
+$(BINARY): all
+
 all: main.o testbench.o chessfigure.o castle.o officer.o horse.o queen.o king.o pawn.o
 	$(CXX) $^ -o $(BINARY)
 
