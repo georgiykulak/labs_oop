@@ -1,0 +1,23 @@
+#! /bin/bash
+
+touch output.text
+for i in 1 2
+do
+        touch input${i}.text
+done
+
+echo -e \
+"4\n\
+3\n\
+i like cake\n\
+hello it\`s me\n\
+i don\`t care\n\
+abc ab be" > input1.text
+
+echo -e \
+"2\n\
+5\n\
+hello world i love you\n\
+how are you getting on" > input2.text
+
+exit $RETURN_SUCCESS
