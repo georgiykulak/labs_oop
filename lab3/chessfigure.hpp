@@ -15,41 +15,16 @@ struct ChessFigure {
         
         uint8_t getY() const { return y; }
 
-        virtual void setPos(
+        void setPos(
                 uint8_t const& x,
-                uint8_t const& y)
-        {
-                if ( !inField(x, y) ) {
-                        return;
-                }
-        
-                this->x = x;
-                this->y = y;
-        }
+                uint8_t const& y);
     
         bool inField(
                 uint8_t const& x,
                 uint8_t const& y)
-                const
-        {
-                return x > 0 && x < 9 && y > 0 && y < 9;
-        }
+                const;
 
-        std::string getPos() const
-        {
-                if ( !inField(x, y) ) {
-                        return "error: \
-                                wrong coordinates";
-                }
-
-                std::string str;
-                str += '<';
-                str += 'A' - 1 + x;
-                str += '0' + y;
-                str += '>';
-
-                return str;
-        }
+        std::string getPos() const;
         
         private:
         uint8_t x;
