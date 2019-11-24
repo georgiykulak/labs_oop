@@ -1,6 +1,7 @@
 #! /bin/bash
 
 touch output.text
+
 for i in 1 2
 do
         touch input${i}.text
