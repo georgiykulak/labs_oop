@@ -1,12 +1,15 @@
-#include "clockapp.hpp"
+#include "mainwindow.h"
+#include "clock.h"
 
-int main(int argc, char** argv)
+#include <QApplication>
+
+int main(int argc, char *argv[])
 {
-        std::cout << app::watch_exist() << "\n";
-        std::cout << app::timer_exist() << "\n";
-        std::cout << app::stopwatch_exist() << "\n";
-        std::cout << app::worldwatch_exist() << "\n";
-        std::cout << app::pomadoro_exist() << "\n";
+    QApplication a(argc, argv);
 
-        return 0;
+    DigitalClock clock;
+    clock.init("Lab #5");
+    clock.show();
+
+    return a.exec();
 }
