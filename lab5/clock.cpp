@@ -6,42 +6,37 @@ DigitalClock::~DigitalClock()
     delete timer;
 }
 
-DigitalClock::DigitalClock(QWidget *parent) :
-    QLCDNumber(parent),
-    timer{new QTimer(this)}
+DigitalClock::DigitalClock ( QWidget * parent )
+    :   QLCDNumber( parent )
+    ,   timer{ new QTimer( this ) }
 {
-    connect(timer, &QTimer::timeout, this, &DigitalClock::showTime);
+    connect( timer, &QTimer::timeout, this, &DigitalClock::showTime );
 }
 
-void DigitalClock::init(QString progname,
-                        int x,
-                        int y)
+void DigitalClock::init ( QString progname, int x, int y )
 {
-    setSegmentStyle(Filled);
+    setSegmentStyle( Filled );
 
-    timer->start(1000);
+    timer->start( 1000 );
 
-    setWindowTitle(tr(progname.toLocal8Bit().data()));
+    setWindowTitle( tr( progname.toLocal8Bit().data() ) );
 
-    resize(x, y);
+    resize( x, y );
 
-    setMinimumSize(120, 90);
+    setMinimumSize( 120, 90 );
 
     showTime();
-
-    return;
 }
 
 void DigitalClock::showTime()
 {
     QTime time = QTime::currentTime();
-    QString text = time.toString("hh:mm");
+    QString text = time.toString( "hh:mm" );
 
-    if ( !(time.second() % 2) ) {
-        text[2] = ' ';
+    if ( !( time.second() % 2 ) )
+    {
+        text[ 2 ] = ' ';
     }
 
-    display(text);
-
-    return;
+    display( text );
 }

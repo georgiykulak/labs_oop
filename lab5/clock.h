@@ -14,15 +14,14 @@ private:
     QTimer* timer;
 
 public:
-    ~DigitalClock();
-    DigitalClock(QWidget *parent = nullptr);
-    void init(QString progname = "Clock",
-              int x = 400,
-              int y = 300);
+    ~DigitalClock ();
 
+    DigitalClock ( QWidget * parent = nullptr );
+    
+    void init ( QString progname = "Clock", int x = 400, int y = 300 );
 
 private slots:
-    void showTime();
+    void showTime ();
 };
 
-#endif // CLOCK_H
+#endif // CLOCK_H //
